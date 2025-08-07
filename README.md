@@ -13,6 +13,7 @@ LendingVerse is a peer-to-peer (P2P) lending platform designed to connect busine
 ## Quick Start
 
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
