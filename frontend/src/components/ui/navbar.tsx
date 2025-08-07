@@ -16,16 +16,16 @@ export function Navbar() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/about" className="text-gray-600 hover:text-gray-900">
-              About
+            <Link href="/marketplace" className="text-gray-600 hover:text-gray-900">
+              Marketplace
             </Link>
-            <Link href="/how-it-works" className="text-gray-600 hover:text-gray-900">
-              How It Works
+            <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
+              Dashboard
             </Link>
-            <Link href="/for-lenders" className="text-gray-600 hover:text-gray-900">
+            <Link href="/loans/create" className="text-gray-600 hover:text-gray-900">
               For Lenders
             </Link>
-            <Link href="/for-borrowers" className="text-gray-600 hover:text-gray-900">
+            <Link href="/loans/create" className="text-gray-600 hover:text-gray-900">
               For Borrowers
             </Link>
           </div>
@@ -42,7 +42,7 @@ export function Navbar() {
               href="/register"
               className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
-              Get Started
+              Register
             </Link>
           </div>
         </div>
