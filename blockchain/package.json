@@ -1,0 +1,32 @@
+{
+  "name": "lending-verse-blockchain",
+  "version": "1.0.0",
+  "description": "Blockchain contracts for LendingVerse P2P lending platform",
+  "main": "truffle-config.js",
+  "scripts": {
+    "compile": "truffle compile",
+    "migrate": "truffle migrate",
+    "migrate:reset": "truffle migrate --reset",
+    "test": "truffle test",
+    "deploy:development": "truffle migrate --network development",
+    "deploy:sepolia": "truffle migrate --network sepolia",
+    "deploy:goerli": "truffle migrate --network goerli",
+    "deploy:mainnet": "truffle migrate --network mainnet",
+    "verify:sepolia": "truffle run verify --network sepolia",
+    "verify:goerli": "truffle run verify --network goerli",
+    "verify:mainnet": "truffle run verify --network mainnet"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.0",
+    "@truffle/hdwallet-provider": "^2.1.0",
+    "dotenv": "^16.0.3",
+    "web3": "^1.8.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "ethereum-waffle": "^3.4.4",
+    "ethers": "^5.7.2",
+    "truffle": "^5.7.0",
+    "truffle-plugin-verify": "^0.6.1"
+  }
+}

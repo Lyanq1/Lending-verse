@@ -1,0 +1,400 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - Base model for all users
+model User {
+  id                String              @id @default(uuid())
+  email             String              @unique
+  passwordHash      String
+  role              UserRole            @default(USER)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  // Profile information
+  profile           Profile?
+  
+  // Business relationship
+  business          Business?
+  
+  // Authentication
+  refreshTokens     RefreshToken[]
+  
+  // Activity
+  notifications     Notification[]
+  activities        Activity[]
+  
+  // Relationships for lenders and borrowers
+  lenderProfile     LenderProfile?
+  borrowerProfile   BorrowerProfile?
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+// Profile model - Personal information for users
+model Profile {
+  id                String    @id @default(uuid())
+  firstName         String?
+  lastName          String?
+  phoneNumber       String?
+  address           String?
+  city              String?
+  state             String?
+  zipCode           String?
+  country           String?
+  avatarUrl         String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to User
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Business model - Company information
+model Business {
+  id                String    @id @default(uuid())
+  name              String
+  legalName         String?
+  registrationNumber String?
+  taxId             String?
+  industry          String?
+  size              String?
+  foundedYear       Int?
+  website           String?
+  description       String?
+  logoUrl           String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Address information
+  address           String?
+  city              String?
+  state             String?
+  zipCode           String?
+  country           String?
+  
+  // Relation to User (owner)
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Relation to Documents
+  documents         Document[]
+  
+  // Relation to Loans and Offers
+  loanRequests      LoanRequest[]
+  loanOffers        LoanOffer[]
+}
+
+// LenderProfile - Additional information for lenders
+model LenderProfile {
+  id                String    @id @default(uuid())
+  investmentPreferences String?
+  minInterestRate   Float?
+  maxLoanAmount     Float?
+  preferredTerms    String?
+  riskTolerance     String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to User
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Relation to Loan Offers
+  loanOffers        LoanOffer[]
+}
+
+// BorrowerProfile - Additional information for borrowers
+model BorrowerProfile {
+  id                String    @id @default(uuid())
+  creditScore       String?
+  annualRevenue     Float?
+  yearsInBusiness   Int?
+  employeeCount     Int?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to User
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Relation to Loan Requests
+  loanRequests      LoanRequest[]
+}
+
+// LoanRequest - Loan requests from borrowers
+model LoanRequest {
+  id                String    @id @default(uuid())
+  title             String
+  amount            Float
+  interestRate      Float
+  term              Int       // in months
+  purpose           String
+  description       String?
+  status            LoanStatus @default(PENDING)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to Borrower
+  borrowerProfileId String
+  borrowerProfile   BorrowerProfile @relation(fields: [borrowerProfileId], references: [id])
+  
+  // Relation to Business
+  businessId        String
+  business          Business  @relation(fields: [businessId], references: [id])
+  
+  // Relation to Documents
+  documents         Document[]
+  
+  // Relation to Loan Matches
+  matches           LoanMatch[]
+  
+  // Relation to Loan Agreement (if funded)
+  loanAgreement     LoanAgreement?
+}
+
+// LoanOffer - Offers from lenders
+model LoanOffer {
+  id                String    @id @default(uuid())
+  amount            Float
+  interestRate      Float
+  term              Int       // in months
+  requirements      String?
+  status            OfferStatus @default(ACTIVE)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to Lender
+  lenderProfileId   String
+  lenderProfile     LenderProfile @relation(fields: [lenderProfileId], references: [id])
+  
+  // Relation to Business
+  businessId        String
+  business          Business  @relation(fields: [businessId], references: [id])
+  
+  // Relation to Loan Matches
+  matches           LoanMatch[]
+}
+
+// LoanMatch - Matches between loan requests and offers
+model LoanMatch {
+  id                String    @id @default(uuid())
+  matchScore        Float
+  status            MatchStatus @default(PENDING)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to Loan Request
+  loanRequestId     String
+  loanRequest       LoanRequest @relation(fields: [loanRequestId], references: [id])
+  
+  // Relation to Loan Offer
+  loanOfferId       String
+  loanOffer         LoanOffer @relation(fields: [loanOfferId], references: [id])
+  
+  // Relation to Loan Agreement (if created)
+  loanAgreement     LoanAgreement?
+}
+
+// LoanAgreement - Finalized loan agreements
+model LoanAgreement {
+  id                String    @id @default(uuid())
+  amount            Float
+  interestRate      Float
+  term              Int       // in months
+  startDate         DateTime
+  endDate           DateTime
+  paymentFrequency  PaymentFrequency @default(MONTHLY)
+  status            AgreementStatus @default(PENDING)
+  contractHash      String?   // Blockchain hash for the agreement
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to Loan Request
+  loanRequestId     String    @unique
+  loanRequest       LoanRequest @relation(fields: [loanRequestId], references: [id])
+  
+  // Relation to Loan Match
+  loanMatchId       String    @unique
+  loanMatch         LoanMatch @relation(fields: [loanMatchId], references: [id])
+  
+  // Relation to Payments
+  payments          Payment[]
+  
+  // Relation to Documents
+  documents         Document[]
+}
+
+// Payment - Loan repayments
+model Payment {
+  id                String    @id @default(uuid())
+  amount            Float
+  dueDate           DateTime
+  paidDate          DateTime?
+  status            PaymentStatus @default(PENDING)
+  transactionHash   String?   // Blockchain hash for the payment
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to Loan Agreement
+  loanAgreementId   String
+  loanAgreement     LoanAgreement @relation(fields: [loanAgreementId], references: [id])
+}
+
+// Document - Files uploaded by users
+model Document {
+  id                String    @id @default(uuid())
+  name              String
+  type              DocumentType
+  url               String
+  fileHash          String?   // Hash of the file for verification
+  isVerified        Boolean   @default(false)
+  verificationDate  DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to Business
+  businessId        String
+  business          Business  @relation(fields: [businessId], references: [id])
+  
+  // Optional relations
+  loanRequestId     String?
+  loanRequest       LoanRequest? @relation(fields: [loanRequestId], references: [id])
+  
+  loanAgreementId   String?
+  loanAgreement     LoanAgreement? @relation(fields: [loanAgreementId], references: [id])
+}
+
+// CreditReport - Credit assessment for borrowers
+model CreditReport {
+  id                String    @id @default(uuid())
+  score             String
+  reportDate        DateTime
+  reportSource      String
+  riskLevel         RiskLevel
+  details           Json?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relation to Borrower Profile
+  borrowerProfileId String    @unique
+  borrowerProfile   BorrowerProfile @relation(fields: [borrowerProfileId], references: [id])
+}
+
+// RefreshToken - For authentication
+model RefreshToken {
+  id                String    @id @default(uuid())
+  token             String    @unique
+  expiresAt         DateTime
+  createdAt         DateTime  @default(now())
+  
+  // Relation to User
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Notification - System notifications
+model Notification {
+  id                String    @id @default(uuid())
+  type              String
+  title             String
+  message           String
+  isRead            Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  
+  // Relation to User
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Activity - User activity logs
+model Activity {
+  id                String    @id @default(uuid())
+  type              String
+  description       String
+  metadata          Json?
+  createdAt         DateTime  @default(now())
+  
+  // Relation to User
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Enums
+enum LoanStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  FUNDED
+  REJECTED
+  EXPIRED
+  COMPLETED
+}
+
+enum OfferStatus {
+  DRAFT
+  ACTIVE
+  MATCHED
+  EXPIRED
+  WITHDRAWN
+}
+
+enum MatchStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum AgreementStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  DEFAULTED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  LATE
+  DEFAULTED
+}
+
+enum PaymentFrequency {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  QUARTERLY
+}
+
+enum DocumentType {
+  FINANCIAL_STATEMENT
+  BUSINESS_PLAN
+  TAX_RETURN
+  BANK_STATEMENT
+  IDENTITY_VERIFICATION
+  BUSINESS_REGISTRATION
+  LOAN_AGREEMENT
+  OTHER
+}
+
+enum RiskLevel {
+  VERY_LOW
+  LOW
+  MEDIUM
+  HIGH
+  VERY_HIGH
+}
