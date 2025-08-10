@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { LoanCard } from '@/components/loan/loan-card';
 import { LoanFilter } from '@/components/loan/loan-filter';
+import { Loan, LoanFilters } from '@/types/loan';
 
 // Mock data
 const mockLoans = [
@@ -61,7 +62,7 @@ export default function Marketplace() {
   const [activeTab, setActiveTab] = useState<'borrower' | 'lender'>('borrower');
   const [filteredLoans, setFilteredLoans] = useState(mockLoans);
   
-  const handleFilter = (filters: any) => {
+  const handleFilter = (filters: LoanFilters) => {
     // In a real app, this would call an API with the filters
     console.log('Applying filters:', filters);
     // For now, just simulate filtering by interest rate

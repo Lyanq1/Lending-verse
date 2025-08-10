@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { LoanFilters } from '@/types/loan';
 
 interface LoanFilterProps {
-  onFilter: (filters: any) => void;
+  onFilter: (filters: LoanFilters) => void;
 }
 
 export function LoanFilter({ onFilter }: LoanFilterProps) {
