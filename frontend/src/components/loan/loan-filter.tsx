@@ -32,7 +32,7 @@ export function LoanFilter({ onFilter }: LoanFilterProps) {
   };
 
   const handleApplyFilters = () => {
-    onFilter(filters);
+    // onFilter(filters);
   };
 
   const handleResetFilters = () => {
