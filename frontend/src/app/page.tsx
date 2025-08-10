@@ -16,13 +16,13 @@ const partners = [
   {
     id: "3",
     name: "FPT",
-    logo: "https://innhanhhcm.vn/wp-content/uploads/2023/11/logo-fpt-01-1024x774.jpg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/FPT_logo_2010.svg/2560px-FPT_logo_2010.svg.png",
     type: "business" as const,
   },
   {
     id: "4",
     name: "VNG",
-    logo: "https://img.favpng.com/1/11/24/vng-corporation-zalo-logo-company-video-games-png-favpng-mCVcvwVze20kYb6kt1nKsGT5v.jpg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/VNG_Corp._logo.svg/1200px-VNG_Corp._logo.svg.png",
     type: "business" as const,
   },
   {

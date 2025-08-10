@@ -28,6 +28,7 @@ interface TransactionCircleProps {
 export function TransactionCircle({ partners }: TransactionCircleProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeTransactions, setActiveTransactions] = useState<Transaction[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [hoveredPartner, setHoveredPartner] = useState<Partner | null>(null);
 
   const calculatePosition = (index: number, total: number, radius: number) => {
