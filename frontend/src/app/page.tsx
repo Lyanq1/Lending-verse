@@ -56,7 +56,7 @@ export default function Home() {
               Our innovative approach eliminates traditional banking barriers, enabling direct lending relationships between investors and borrowers.
             </p>
             <p>
-              Whether you're a business seeking growth capital or an individual looking to invest, our platform provides a transparent and reliable lending ecosystem.
+              Whether you&apos;re a business seeking growth capital or an individual looking to invest, our platform provides a transparent and reliable lending ecosystem.
             </p>
             <button className="mt-8 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               Get Started
