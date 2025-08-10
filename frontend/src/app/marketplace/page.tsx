@@ -66,10 +66,11 @@ export default function Marketplace() {
     // In a real app, this would call an API with the filters
     console.log('Applying filters:', filters);
     // For now, just simulate filtering by interest rate
-    if (filters.interestRate) {
+    if (filters.interestRate && Array.isArray(filters.interestRate)) {
+      const [minRate, maxRate] = filters.interestRate;
       const filtered = mockLoans.filter(loan => 
-        loan.interest >= filters.interestRate[0] && 
-        loan.interest <= filters.interestRate[1]
+        loan.interest >= minRate && 
+        loan.interest <= maxRate
       );
       setFilteredLoans(filtered);
     } else {

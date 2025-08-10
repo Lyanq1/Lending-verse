@@ -16,7 +16,7 @@ interface TransactionAnimationProps {
   transaction: Transaction;
 }
 
-export function TransactionAnimation({ fromPosition, toPosition, transaction }: TransactionAnimationProps) {
+export function TransactionAnimation({ fromPosition, toPosition }: TransactionAnimationProps) {
   return (
     <motion.div
       className="absolute w-6 h-6 rounded-full bg-primary/30 backdrop-blur-sm"
